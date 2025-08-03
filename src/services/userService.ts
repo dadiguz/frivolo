@@ -4,11 +4,12 @@ import { User, UserData } from '../types';
 export const createOrUpdateUser = async (userId: string, userData: UserData): Promise<User | null> => {
   try {
     // First, try to get existing user
-    const { data: existingUser } = await supabase
+    const { data: existingUsers } = await supabase
       .from('users')
       .select('*')
-      .eq('user_id', userId)
-      .single();
+      .eq('user_id', userId);
+
+    const existingUser = existingUsers && existingUsers.length > 0 ? existingUsers[0] : null;
 
     const userPayload = {
       user_id: userId,
