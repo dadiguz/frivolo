@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import { User, Briefcase, Clock, Calendar, DollarSign } from 'lucide-react';
-
-interface UserData {
-  name: string;
-  age: string;
-  country: string;
-  monthlySalary: string;
-  hoursPerDay: string;
-  daysPerWeek: string;
-}
+import { UserData } from '../types';
 
 interface UserSetupProps {
   onComplete: (userData: UserData) => void;

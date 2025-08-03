@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import UserSetup from './components/UserSetup';
 import Calculator from './components/Calculator';
-
-interface UserData {
-  name: string;
-  age: string;
-  country: string;
-  monthlySalary: string;
-  hoursPerDay: string;
-  daysPerWeek: string;
-}
+import { UserData } from './types';
+import { getUserId } from './utils/userUtils';
+import { createOrUpdateUser } from './services/userService';
 
 function App() {
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [userId, setUserId] = useState<string>('');
 
   // Load user data from localStorage on mount
   useEffect(() => {
+    // Generate or get existing user ID
+    const currentUserId = getUserId();
+    setUserId(currentUserId);
+
     const savedData = localStorage.getItem('frivoloUserData');
     if (savedData) {
       try {
@@ -28,9 +27,12 @@ function App() {
     }
   }, []);
 
-  const handleUserSetupComplete = (data: UserData) => {
+  const handleUserSetupComplete = async (data: UserData) => {
     setUserData(data);
     localStorage.setItem('frivoloUserData', JSON.stringify(data));
+    
+    // Create or update user in database
+    await createOrUpdateUser(userId, data);
   };
 
   const handleReset = () => {
@@ -41,7 +43,7 @@ function App() {
   return (
     <div className="App">
       {userData ? (
-        <Calculator userData={userData} onReset={handleReset} />
+        <Calculator userData={userData} userId={userId} onReset={handleReset} />
       ) : (
         <UserSetup onComplete={handleUserSetupComplete} />
       )}

@@ -1,24 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator as CalcIcon, Clock, DollarSign, User, Edit3 } from 'lucide-react';
-
-interface UserData {
-  name: string;
-  age: string;
-  country: string;
-  monthlySalary: string;
-  hoursPerDay: string;
-  daysPerWeek: string;
-}
+import { Calculator as CalcIcon, Clock, DollarSign, User, Edit3, BookmarkPlus, History } from 'lucide-react';
+import { UserData } from '../types';
+import SaveSearchModal from './SaveSearchModal';
+import SavedSearches from './SavedSearches';
+import { saveSearch } from '../services/searchService';
 
 interface CalculatorProps {
   userData: UserData;
+  userId: string;
   onReset: () => void;
 }
 
-export default function Calculator({ userData, onReset }: CalculatorProps) {
+export default function Calculator({ userData, userId, onReset }: CalculatorProps) {
   const [productCost, setProductCost] = useState('');
   const [animatedHours, setAnimatedHours] = useState(0);
   const [animatedProgress, setAnimatedProgress] = useState(0);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showSavedSearches, setShowSavedSearches] = useState(false);
+  const [showSaveButton, setShowSaveButton] = useState(false);
 
   // Calculate hourly wage
   const hourlyWage = parseFloat(userData.monthlySalary) / 
@@ -27,6 +26,19 @@ export default function Calculator({ userData, onReset }: CalculatorProps) {
 
   // Calculate hours needed
   const hoursNeeded = productCost ? parseFloat(productCost) / hourlyWage : 0;
+
+  // Show save button after calculation is complete
+  useEffect(() => {
+    if (hoursNeeded > 0) {
+      const timer = setTimeout(() => {
+        setShowSaveButton(true);
+      }, 1500); // Show after animation completes
+      
+      return () => clearTimeout(timer);
+    } else {
+      setShowSaveButton(false);
+    }
+  }, [hoursNeeded]);
 
   // Animate numbers when productCost changes
   useEffect(() => {
@@ -66,6 +78,23 @@ export default function Calculator({ userData, onReset }: CalculatorProps) {
     }
   }, [hoursNeeded]);
 
+  const handleSaveSearch = async (productName: string) => {
+    if (!productCost || !productName) return;
+    
+    const success = await saveSearch(
+      userId,
+      productName,
+      parseFloat(productCost),
+      hoursNeeded,
+      hourlyWage
+    );
+    
+    if (success) {
+      setShowSaveButton(false);
+      // Show a brief success message or animation
+    }
+  };
+
   const formatHours = (hours: number) => {
     if (hours === 0) return '0 horas';
     if (hours < 1) return `${Math.round(hours * 60)} minutos`;
@@ -95,13 +124,22 @@ export default function Calculator({ userData, onReset }: CalculatorProps) {
                 <p className="text-white/80 text-sm">¡Hola, {userData.name}!</p>
               </div>
             </div>
-            <button
-              onClick={onReset}
-              className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors duration-200"
-              aria-label="Editar perfil"
-            >
-              <Edit3 className="w-5 h-5" />
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowSavedSearches(!showSavedSearches)}
+                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors duration-200"
+                aria-label="Ver búsquedas guardadas"
+              >
+                <History className="w-5 h-5" />
+              </button>
+              <button
+                onClick={onReset}
+                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors duration-200"
+                aria-label="Editar perfil"
+              >
+                <Edit3 className="w-5 h-5" />
+              </button>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
@@ -132,6 +170,19 @@ export default function Calculator({ userData, onReset }: CalculatorProps) {
 
       {/* Main Calculator */}
       <div className="max-w-4xl mx-auto p-6">
+        {/* Saved Searches Section */}
+        {showSavedSearches && (
+          <div className="mb-8">
+            <div className="bg-white border border-gray-200 rounded-2xl p-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <History className="w-5 h-5" />
+                Búsquedas guardadas
+              </h3>
+              <SavedSearches userId={userId} />
+            </div>
+          </div>
+        )}
+
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
             ¿Cuánto cuesta realmente?
@@ -185,6 +236,19 @@ export default function Calculator({ userData, onReset }: CalculatorProps) {
                 <p className="text-2xl font-medium text-gray-700">
                   {formatHours(animatedHours)}
                 </p>
+                
+                {/* Save Button */}
+                {showSaveButton && (
+                  <div className="mt-6 animate-fade-in">
+                    <button
+                      onClick={() => setShowSaveModal(true)}
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#FF6A3D] border-2 border-[#FF6A3D] rounded-lg hover:bg-[#FF6A3D] hover:text-white transition-all duration-200 font-medium"
+                    >
+                      <BookmarkPlus className="w-4 h-4" />
+                      ¿Quieres guardar esta búsqueda?
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Progress Visualization */}
@@ -251,6 +315,15 @@ export default function Calculator({ userData, onReset }: CalculatorProps) {
           </div>
         )}
       </div>
+      
+      {/* Save Search Modal */}
+      <SaveSearchModal
+        isOpen={showSaveModal}
+        onClose={() => setShowSaveModal(false)}
+        onSave={handleSaveSearch}
+        productCost={productCost}
+        hoursNeeded={hoursNeeded}
+      />
     </div>
   );
 }
