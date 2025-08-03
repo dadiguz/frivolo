@@ -183,7 +183,6 @@ export default function Calculator({ userData, userId, onReset }: CalculatorProp
                 <History className="w-5 h-5" />
                 Búsquedas guardadas
               </h3>
-              <SavedSearches userId={userId} />
               <SavedSearches userId={userId} onSearchSelect={handleSearchSelect} />
             </div>
           </div>
