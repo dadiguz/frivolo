@@ -28,11 +28,17 @@ function App() {
   }, []);
 
   const handleUserSetupComplete = async (data: UserData) => {
-    setUserData(data);
-    localStorage.setItem('frivoloUserData', JSON.stringify(data));
-    
-    // Create or update user in database
-    await createOrUpdateUser(userId, data);
+    try {
+      // Create or update user in database first
+      await createOrUpdateUser(userId, data);
+      
+      // Only update state and localStorage after successful database operation
+      setUserData(data);
+      localStorage.setItem('frivoloUserData', JSON.stringify(data));
+    } catch (error) {
+      console.error('Error creating user:', error);
+      // Handle error - maybe show a message to user
+    }
   };
 
   const handleReset = () => {
