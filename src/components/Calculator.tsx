@@ -95,6 +95,11 @@ export default function Calculator({ userData, userId, onReset }: CalculatorProp
     }
   };
 
+  const handleSearchSelect = (cost: number) => {
+    setProductCost(cost.toString());
+    setShowSavedSearches(false);
+  };
+
   const formatHours = (hours: number) => {
     if (hours === 0) return '0 horas';
     if (hours < 1) return `${Math.round(hours * 60)} minutos`;
@@ -179,6 +184,7 @@ export default function Calculator({ userData, userId, onReset }: CalculatorProp
                 Búsquedas guardadas
               </h3>
               <SavedSearches userId={userId} />
+              <SavedSearches userId={userId} onSearchSelect={handleSearchSelect} />
             </div>
           </div>
         )}

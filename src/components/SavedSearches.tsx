@@ -5,9 +5,10 @@ import { getUserSearches, deleteSearch } from '../services/searchService';
 
 interface SavedSearchesProps {
   userId: string;
+  onSearchSelect: (productCost: number) => void;
 }
 
-export default function SavedSearches({ userId }: SavedSearchesProps) {
+export default function SavedSearches({ userId, onSearchSelect }: SavedSearchesProps) {
   const [searches, setSearches] = useState<SavedSearch[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -81,7 +82,8 @@ export default function SavedSearches({ userId }: SavedSearchesProps) {
       {searches.map((search) => (
         <div
           key={search.id}
-          className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+          className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+          onClick={() => onSearchSelect(search.product_cost)}
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
