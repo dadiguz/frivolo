@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, Clock, Calendar, DollarSign } from 'lucide-react';
 import { UserData } from '../types';
+import logo from '../assets/logo.svg';
 
 interface UserSetupProps {
   onComplete: (userData: UserData) => void;
@@ -69,7 +70,7 @@ export default function UserSetup({ onComplete }: UserSetupProps) {
         {/* Header */}
         <div className="text-center">
           <div className="w-48 h-24 mx-auto mb-2">
-            <img src="/src/assets/logo.svg" alt="Frivolo Logo" className="w-full h-full" />
+            <img src={logo} alt="Frivolo Logo" className="w-full h-full" />
           </div>
           <p className="text-gray-600">Descubre el valor real de tu tiempo</p>
         </div>
