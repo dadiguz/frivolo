@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Briefcase, Clock, Calendar, DollarSign } from 'lucide-react';
+import { User, Clock, Calendar, DollarSign } from 'lucide-react';
 import { UserData } from '../types';
 
 interface UserSetupProps {
@@ -67,13 +67,10 @@ export default function UserSetup({ onComplete }: UserSetupProps) {
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#FF6A3D] to-[#6A38FF] flex items-center justify-center">
-            <Briefcase className="w-8 h-8 text-white" />
+        <div className="text-center">
+          <div className="w-48 h-24 mx-auto mb-2">
+            <img src="/src/assets/logo.svg" alt="Frivolo Logo" className="w-full h-full" />
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-[#FF6A3D] via-[#FF4E8D] to-[#6A38FF] bg-clip-text text-transparent mb-2">
-            Frivolo
-          </h1>
           <p className="text-gray-600">Descubre el valor real de tu tiempo</p>
         </div>
 
