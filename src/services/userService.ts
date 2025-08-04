@@ -14,8 +14,10 @@ export const createOrUpdateUser = async (userId: string, userData: UserData): Pr
     const userPayload = {
       user_id: userId,
       name: userData.name,
+      email: userData.email,
       age: parseInt(userData.age),
       country: userData.country,
+      job: userData.job,
       monthly_salary: parseFloat(userData.monthlySalary),
       hours_per_day: parseFloat(userData.hoursPerDay),
       days_per_week: parseFloat(userData.daysPerWeek),

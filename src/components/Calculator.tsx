@@ -164,10 +164,17 @@ export default function Calculator({ userData, userId, onEdit }: CalculatorProps
             </div>
             <div className="bg-white/10 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
-                <User className="w-4 h-4" />
+                <DollarSign className="w-4 h-4" />
                 <span className="font-medium">Valor por hora</span>
               </div>
               <p className="text-lg font-bold">${hourlyWage.toFixed(2)} MXN</p>
+            </div>
+            <div className="bg-white/10 rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <User className="w-4 h-4" />
+                <span className="font-medium">Trabajo</span>
+              </div>
+              <p className="text-lg font-bold">{userData.job}</p>
             </div>
           </div>
         </div>

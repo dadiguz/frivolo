@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Clock, Calendar, DollarSign } from 'lucide-react';
+import { User, Clock, Calendar, DollarSign, Mail, Briefcase } from 'lucide-react';
 import { UserData } from '../types';
 import logo from '../assets/logo.svg';
 
@@ -12,14 +12,51 @@ interface UserSetupProps {
 export default function UserSetup({ onComplete, initialData, onCancel }: UserSetupProps) {
   const [userData, setUserData] = useState<UserData>({
     name: initialData?.name || '',
+    email: initialData?.email || '',
     age: initialData?.age || '',
     country: 'México',
+    job: initialData?.job || '',
     monthlySalary: initialData?.monthlySalary || '',
     hoursPerDay: initialData?.hoursPerDay || '',
     daysPerWeek: initialData?.daysPerWeek || ''
   });
 
   const [currentStep, setCurrentStep] = useState(0);
+  const [emailError, setEmailError] = useState('');
+  const [showJobDropdown, setShowJobDropdown] = useState(false);
+
+  const jobOptions = [
+    'Desarrollador de Software',
+    'Diseñador Gráfico',
+    'Contador',
+    'Abogado',
+    'Médico',
+    'Enfermero/a',
+    'Profesor/a',
+    'Ingeniero Civil',
+    'Arquitecto',
+    'Marketing Digital',
+    'Vendedor',
+    'Administrador',
+    'Recursos Humanos',
+    'Psicólogo',
+    'Chef',
+    'Mesero/a',
+    'Recepcionista',
+    'Asistente Ejecutivo',
+    'Analista Financiero',
+    'Consultor',
+    'Electricista',
+    'Plomero',
+    'Mecánico',
+    'Chofer',
+    'Seguridad',
+    'Limpieza',
+    'Estudiante',
+    'Freelancer',
+    'Emprendedor',
+    'Otro'
+  ];
 
   const steps = [
     {
@@ -27,7 +64,15 @@ export default function UserSetup({ onComplete, initialData, onCancel }: UserSet
       title: '¡Hola! Comencemos',
       fields: [
         { key: 'name', label: 'Tu nombre', type: 'text', icon: User, placeholder: 'Ej: María García' },
+        { key: 'email', label: 'Correo electrónico', type: 'email', icon: Mail, placeholder: 'maria@ejemplo.com' },
         { key: 'age', label: 'Tu edad', type: 'number', icon: User, placeholder: '25' }
+      ]
+    },
+    {
+      id: 'job',
+      title: 'Tu trabajo',
+      fields: [
+        { key: 'job', label: 'Trabajo/Profesión', type: 'select', icon: Briefcase, placeholder: 'Selecciona o escribe tu trabajo' }
       ]
     },
     {
@@ -42,12 +87,26 @@ export default function UserSetup({ onComplete, initialData, onCancel }: UserSet
   ];
 
   const handleInputChange = (key: keyof UserData, value: string) => {
+    if (key === 'email') {
+      setEmailError('');
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (value && !emailRegex.test(value)) {
+        setEmailError('Por favor ingresa un correo electrónico válido');
+      }
+    }
     setUserData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleJobSelect = (job: string) => {
+    setUserData(prev => ({ ...prev, job }));
+    setShowJobDropdown(false);
   };
 
   const canProceed = () => {
     const currentFields = steps[currentStep].fields;
-    return currentFields.every(field => userData[field.key as keyof UserData].trim() !== '');
+    const allFieldsFilled = currentFields.every(field => userData[field.key as keyof UserData].trim() !== '');
+    const emailValid = !emailError && (userData.email === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.email));
+    return allFieldsFilled && emailValid;
   };
 
   const handleNext = () => {
@@ -100,6 +159,51 @@ export default function UserSetup({ onComplete, initialData, onCancel }: UserSet
           <div className="space-y-4">
             {currentStepData.fields.map((field) => {
               const Icon = field.icon;
+              
+              if (field.type === 'select' && field.key === 'job') {
+                return (
+                  <div key={field.key} className="space-y-2">
+                    <label 
+                      htmlFor={field.key}
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      {field.label}
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Icon className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        id={field.key}
+                        type="text"
+                        placeholder={field.placeholder}
+                        value={userData.job}
+                        onChange={(e) => handleInputChange('job', e.target.value)}
+                        onFocus={() => setShowJobDropdown(true)}
+                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6A3D] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+                        required
+                      />
+                      {showJobDropdown && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                          {jobOptions
+                            .filter(job => job.toLowerCase().includes(userData.job.toLowerCase()))
+                            .map((job) => (
+                            <button
+                              key={job}
+                              type="button"
+                              onClick={() => handleJobSelect(job)}
+                              className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                            >
+                              {job}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+              
               return (
                 <div key={field.key} className="space-y-2">
                   <label 
@@ -122,6 +226,9 @@ export default function UserSetup({ onComplete, initialData, onCancel }: UserSet
                       required
                       aria-describedby={`${field.key}-help`}
                     />
+                    {field.key === 'email' && emailError && (
+                      <p className="text-sm text-red-600">{emailError}</p>
+                    )}
                   </div>
                 </div>
               );
