@@ -91,7 +91,12 @@ export default function Calculator({ userData, userId, onEdit }: CalculatorProps
     
     if (success) {
       setShowSaveButton(false);
-      // Show a brief success message or animation
+      // Refresh saved searches if they're visible
+      if (showSavedSearches) {
+        // Force a re-render of SavedSearches component
+        setShowSavedSearches(false);
+        setTimeout(() => setShowSavedSearches(true), 100);
+      }
     }
   };
 

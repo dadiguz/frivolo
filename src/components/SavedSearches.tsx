@@ -14,7 +14,7 @@ export default function SavedSearches({ userId, onSearchSelect }: SavedSearchesP
 
   useEffect(() => {
     loadSearches();
-  }, [userId]);
+  }, [userId, onSearchSelect]); // Add onSearchSelect as dependency to trigger refresh
 
   const loadSearches = async () => {
     setIsLoading(true);
