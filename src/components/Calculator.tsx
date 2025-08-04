@@ -4,6 +4,7 @@ import { UserData } from '../types';
 import SaveSearchModal from './SaveSearchModal';
 import SavedSearches from './SavedSearches';
 import { saveSearch } from '../services/searchService';
+import { createOrUpdateUser } from '../services/userService';
 
 interface CalculatorProps {
   userData: UserData;
@@ -81,6 +82,9 @@ export default function Calculator({ userData, userId, onEdit }: CalculatorProps
 
   const handleSaveSearch = async (productName: string) => {
     if (!productCost || !productName) return;
+    
+    // Ensure user exists in database before saving search
+    await createOrUpdateUser(userId, userData);
     
     const success = await saveSearch(
       userId,
