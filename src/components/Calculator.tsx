@@ -18,6 +18,7 @@ export default function Calculator({ userData, userId, onEdit }: CalculatorProps
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showSavedSearches, setShowSavedSearches] = useState(false);
   const [showSaveButton, setShowSaveButton] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Calculate hourly wage
   const hourlyWage = parseFloat(userData.monthlySalary) / 
@@ -91,12 +92,8 @@ export default function Calculator({ userData, userId, onEdit }: CalculatorProps
     
     if (success) {
       setShowSaveButton(false);
-      // Refresh saved searches if they're visible
-      if (showSavedSearches) {
-        // Force a re-render of SavedSearches component
-        setShowSavedSearches(false);
-        setTimeout(() => setShowSavedSearches(true), 100);
-      }
+      // Force refresh of saved searches by toggling the key
+      setRefreshKey(prev => prev + 1);
     }
   };
 
@@ -195,7 +192,11 @@ export default function Calculator({ userData, userId, onEdit }: CalculatorProps
                 <History className="w-5 h-5" />
                 Búsquedas guardadas
               </h3>
-              <SavedSearches userId={userId} onSearchSelect={handleSearchSelect} />
+              <SavedSearches 
+                key={refreshKey}
+                userId={userId} 
+                onSearchSelect={handleSearchSelect} 
+              />
             </div>
           </div>
         )}
