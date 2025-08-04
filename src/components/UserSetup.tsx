@@ -226,10 +226,10 @@ export default function UserSetup({ onComplete, initialData, onCancel }: UserSet
                       required
                       aria-describedby={`${field.key}-help`}
                     />
-                    {field.key === 'email' && emailError && (
-                      <p className="text-sm text-red-600">{emailError}</p>
-                    )}
                   </div>
+                  {field.key === 'email' && emailError && (
+                    <p className="text-sm text-red-600 mt-1">{emailError}</p>
+                  )}
                 </div>
               );
             })}
