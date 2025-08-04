@@ -5,16 +5,18 @@ import logo from '../assets/logo.svg';
 
 interface UserSetupProps {
   onComplete: (userData: UserData) => void;
+  initialData?: UserData;
+  onCancel?: () => void;
 }
 
-export default function UserSetup({ onComplete }: UserSetupProps) {
+export default function UserSetup({ onComplete, initialData, onCancel }: UserSetupProps) {
   const [userData, setUserData] = useState<UserData>({
-    name: '',
-    age: '',
+    name: initialData?.name || '',
+    age: initialData?.age || '',
     country: 'México',
-    monthlySalary: '',
-    hoursPerDay: '',
-    daysPerWeek: ''
+    monthlySalary: initialData?.monthlySalary || '',
+    hoursPerDay: initialData?.hoursPerDay || '',
+    daysPerWeek: initialData?.daysPerWeek || ''
   });
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -92,7 +94,7 @@ export default function UserSetup({ onComplete }: UserSetupProps) {
         {/* Step Content */}
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold text-gray-800 text-center">
-            {currentStepData.title}
+            {initialData ? 'Editar información' : currentStepData.title}
           </h2>
 
           <div className="space-y-4">
@@ -137,6 +139,14 @@ export default function UserSetup({ onComplete }: UserSetupProps) {
 
           {/* Navigation Buttons */}
           <div className="flex gap-3 pt-6">
+            {initialData && onCancel && (
+              <button
+                onClick={onCancel}
+                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
+              >
+                Cancelar
+              </button>
+            )}
             {currentStep > 0 && (
               <button
                 onClick={handlePrevious}
@@ -150,7 +160,7 @@ export default function UserSetup({ onComplete }: UserSetupProps) {
               disabled={!canProceed()}
               className="flex-1 px-6 py-3 bg-gradient-to-r from-[#FF6A3D] to-[#FF4E8D] text-white rounded-lg hover:from-[#FF6A3D]/90 hover:to-[#FF4E8D]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
             >
-              {currentStep === steps.length - 1 ? 'Comenzar' : 'Siguiente'}
+              {currentStep === steps.length - 1 ? (initialData ? 'Guardar cambios' : 'Comenzar') : 'Siguiente'}
             </button>
           </div>
         </div>

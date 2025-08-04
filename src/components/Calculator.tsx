@@ -8,10 +8,10 @@ import { saveSearch } from '../services/searchService';
 interface CalculatorProps {
   userData: UserData;
   userId: string;
-  onReset: () => void;
+  onEdit: () => void;
 }
 
-export default function Calculator({ userData, userId, onReset }: CalculatorProps) {
+export default function Calculator({ userData, userId, onEdit }: CalculatorProps) {
   const [productCost, setProductCost] = useState('');
   const [animatedHours, setAnimatedHours] = useState(0);
   const [animatedProgress, setAnimatedProgress] = useState(0);
@@ -138,7 +138,7 @@ export default function Calculator({ userData, userId, onReset }: CalculatorProp
                 <History className="w-5 h-5" />
               </button>
               <button
-                onClick={onReset}
+                onClick={onEdit}
                 className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors duration-200"
                 aria-label="Editar perfil"
               >

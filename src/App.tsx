@@ -8,6 +8,7 @@ import { createOrUpdateUser } from './services/userService';
 function App() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [userId, setUserId] = useState<string>('');
+  const [isEditing, setIsEditing] = useState(false);
 
   // Load user data from localStorage on mount
   useEffect(() => {
@@ -35,23 +36,31 @@ function App() {
       // Only update state and localStorage after successful database operation
       setUserData(data);
       localStorage.setItem('frivoloUserData', JSON.stringify(data));
+      setIsEditing(false);
     } catch (error) {
       console.error('Error creating user:', error);
       // Handle error - maybe show a message to user
     }
   };
 
-  const handleReset = () => {
-    setUserData(null);
-    localStorage.removeItem('frivoloUserData');
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
   };
 
   return (
     <div className="App">
-      {userData ? (
-        <Calculator userData={userData} userId={userId} onReset={handleReset} />
+      {userData && !isEditing ? (
+        <Calculator userData={userData} userId={userId} onEdit={handleEdit} />
       ) : (
-        <UserSetup onComplete={handleUserSetupComplete} />
+        <UserSetup 
+          onComplete={handleUserSetupComplete} 
+          initialData={isEditing ? userData : undefined}
+          onCancel={isEditing ? handleCancelEdit : undefined}
+        />
       )}
     </div>
   );
